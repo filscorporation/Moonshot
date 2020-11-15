@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    
+    private void Start()
+    {
+        ShipBuilder.Instance.Initialize();
+    }
 }
