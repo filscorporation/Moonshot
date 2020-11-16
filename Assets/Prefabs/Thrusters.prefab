@@ -47,6 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   force: 10
+  consumption: 1
 --- !u!212 &1640131550152670545
 SpriteRenderer:
   m_ObjectHideFlags: 0

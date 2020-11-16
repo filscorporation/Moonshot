@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class ShipBuilder : MonoBehaviour
 {
@@ -12,13 +14,17 @@ public class ShipBuilder : MonoBehaviour
     [SerializeField] private GameObject cabinPrefab;
     [SerializeField] private List<GameObject> componentsPrefabs;
 
+    [SerializeField] private Text toughnessText;
+    [SerializeField] private Text damageText;
+
     private bool buildingMode = true;
     private int selectedComponent = -1;
-    private Component placingComponent;
+    private ShipComponent placingComponent;
     private bool placingSnapped = false;
     private Ship ship;
-    
-    private readonly KeyCode[] numberKeys = {
+
+    private readonly KeyCode[] numberKeys =
+    {
         KeyCode.Alpha1,
         KeyCode.Alpha2,
         KeyCode.Alpha3,
@@ -42,6 +48,8 @@ public class ShipBuilder : MonoBehaviour
         GameObject go = new GameObject("Ship", typeof(Ship));
         ship = go.GetComponent<Ship>();
         ship.Initialize();
+
+        UpdateToughnessText();
     }
 
     private void Update()
@@ -52,6 +60,8 @@ public class ShipBuilder : MonoBehaviour
             SnapToMouse();
             ReadInputToPlaceComponent();
         }
+        
+        damageText.text = $"Damage: {ship.DamageTaken.ToString("F1", CultureInfo.InvariantCulture)}";
     }
 
     private void ReadInputToSelectComponent()
@@ -79,9 +89,10 @@ public class ShipBuilder : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && placingComponent != null && placingSnapped)
         {
             ship.AddComponent(placingComponent);
+            UpdateToughnessText();
             placingSnapped = false;
             
-            placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<Component>();
+            placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
             placingComponent.Initialize();
             placingComponent.Disable();
         }
@@ -95,10 +106,12 @@ public class ShipBuilder : MonoBehaviour
             return;
 
         Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        float angle = 0;
         Vector2Int? closestComponent = null;
         float closestDistance = 0;
         foreach (Vector2Int freeSlot in ship.Components.SelectMany(c => c.FreeNeghbours).Distinct())
         {
+            // TODO: calculate angle
             float distance = Vector2.Distance((Vector2)ship.transform.position + freeSlot, position);
             if (closestComponent != null)
             {
@@ -118,6 +131,7 @@ public class ShipBuilder : MonoBehaviour
             placingComponent.Y = closestComponent.Value.y;
         }
         
+        placingComponent.transform.eulerAngles = new Vector3(0, 0, angle);
         placingComponent.transform.position = position;
     }
 
@@ -136,9 +150,16 @@ public class ShipBuilder : MonoBehaviour
         }
 
         selectedComponent = index;
-        placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<Component>();
+        placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
         placingComponent.Initialize();
         placingComponent.Disable();
+    }
+
+    private void UpdateToughnessText()
+    {
+        int t = ship.Toughness;
+        toughnessText.text = $"Toughness: {t}";
+        toughnessText.color = t >= 0 ? Color.green : Color.red;
     }
 
     public void StartShip()
