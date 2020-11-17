@@ -63,15 +63,18 @@ public abstract class ShipComponent : MonoBehaviour
     
     public List<ShipComponent> Neighbours => new List<ShipComponent> { up, down, right, left };
 
-    public virtual List<Vector2Int> FreeNeghbours
+    /// <summary>
+    /// Returns pair of free neighbour slot index and its own position, for angle calculation
+    /// </summary>
+    public virtual List<Tuple<Vector2Int, Vector2>> FreeNeghbours
     {
         get
         {
-            List<Vector2Int> result = new List<Vector2Int>();
-            if (up == null) result.Add(new Vector2Int(X, Y + 1));
-            if (down == null) result.Add(new Vector2Int(X, Y - 1));
-            if (right == null) result.Add(new Vector2Int(X + 1, Y));
-            if (left == null) result.Add(new Vector2Int(X - 1, Y));
+            List<Tuple<Vector2Int, Vector2>> result = new List<Tuple<Vector2Int, Vector2>>();
+            if (up == null) result.Add(new Tuple<Vector2Int, Vector2>(new Vector2Int(X, Y + 1), transform.position));
+            if (down == null) result.Add(new Tuple<Vector2Int, Vector2>(new Vector2Int(X, Y - 1), transform.position));
+            if (right == null) result.Add(new Tuple<Vector2Int, Vector2>(new Vector2Int(X + 1, Y), transform.position));
+            if (left == null) result.Add(new Tuple<Vector2Int, Vector2>(new Vector2Int(X - 1, Y), transform.position));
 
             return result;
         }
@@ -79,6 +82,7 @@ public abstract class ShipComponent : MonoBehaviour
     
     public int X { get; set; }
     public int Y { get; set; }
+    public virtual bool CanRotate => false;
     
     public Ship Ship { get; set; }
     public int Index { get; set; }
@@ -89,7 +93,8 @@ public abstract class ShipComponent : MonoBehaviour
     public abstract int Toughness { get; }
     public virtual int MaxFuel => 0;
     public float Fuel { get; set; }
-    protected bool CanTransferFuel => MaxFuel > 0;
+    protected virtual bool NeedFuel => false;
+    protected virtual bool CanTransferFuel => false;
 
     #endregion
 
@@ -132,7 +137,7 @@ public abstract class ShipComponent : MonoBehaviour
         Collider.enabled = true;
         Rigidbody.simulated = true;
 
-        if (CanTransferFuel)
+        if (NeedFuel)
             ConnectFuelSystem();
     }
 
@@ -160,7 +165,6 @@ public abstract class ShipComponent : MonoBehaviour
             foreach (ShipComponent nextComponent in component.Neighbours
                 .Where(c => c != null && c.CanTransferFuel && !fuelComponentCloseList[c.Index]))
             {
-                Debug.Log("Enqueue " + nextComponent.Index);
                 fuelComponentOpenQueue.Enqueue(nextComponent.Index);
                 fuelComponentCloseList[nextComponent.Index] = true;
             }

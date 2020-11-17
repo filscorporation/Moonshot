@@ -9,6 +9,7 @@ public class FuelTank : ShipComponent
 
     public override int Toughness => -1;
     public override int MaxFuel => 10;
+    protected override bool CanTransferFuel => true;
 
     protected override bool DrainFuelInner(float fuel)
     {

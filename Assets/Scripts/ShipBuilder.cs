@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using UnityEngine;
@@ -107,12 +108,12 @@ public class ShipBuilder : MonoBehaviour
 
         Vector2 position = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         float angle = 0;
-        Vector2Int? closestComponent = null;
+        Tuple<Vector2Int, Vector2> closestComponent = null;
         float closestDistance = 0;
-        foreach (Vector2Int freeSlot in ship.Components.SelectMany(c => c.FreeNeghbours).Distinct())
+        foreach (Tuple<Vector2Int, Vector2> freeSlot in ship.Components.SelectMany(c => c.FreeNeghbours).Distinct())
         {
-            // TODO: calculate angle
-            float distance = Vector2.Distance((Vector2)ship.transform.position + freeSlot, position);
+            Vector2 middle = ((Vector2) ship.transform.position + freeSlot.Item1 + freeSlot.Item2) / 2;
+            float distance = Vector2.Distance(middle, position);
             if (closestComponent != null)
             {
                 if (distance >= closestDistance)
@@ -123,12 +124,14 @@ public class ShipBuilder : MonoBehaviour
             closestDistance = distance;
         }
 
-        if (closestComponent.HasValue && closestDistance < MIN_SNAP_DISTANCE)
+        if (closestComponent != null && Vector2.Distance((Vector2) ship.transform.position + closestComponent.Item1, position) < MIN_SNAP_DISTANCE)
         {
             placingSnapped = true;
-            position = (Vector2) ship.transform.position + closestComponent.Value;
-            placingComponent.X = closestComponent.Value.x;
-            placingComponent.Y = closestComponent.Value.y;
+            position = (Vector2) ship.transform.position + closestComponent.Item1;
+            if (placingComponent.CanRotate)
+                angle = Mathf.Atan2(closestComponent.Item2.y - position.y, closestComponent.Item2.x - position.x) * Mathf.Rad2Deg + 90;
+            placingComponent.X = closestComponent.Item1.x;
+            placingComponent.Y = closestComponent.Item1.y;
         }
         
         placingComponent.transform.eulerAngles = new Vector3(0, 0, angle);

@@ -1,44 +1,18 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class Thrusters : ShipComponent
+public class Thrusters : ControlledComponent
 {
-    [SerializeField] private float force = 10f;
-    [SerializeField] private float consumption = 1f;
+    [SerializeField] protected float force = 10f;
+    [SerializeField] protected float consumption = 1f;
 
-    private Rigidbody2D body;
+    public override bool CanRotate => true;
     
+    protected override Vector2 Force => -transform.up * force;
+    protected override float Consumption => consumption;
     public override int Toughness => -1;
     public override int MaxFuel => 3;
 
-    public override List<Vector2Int> FreeNeghbours => new List<Vector2Int>();
-
-    private void Start()
-    {
-        body = GetComponent<Rigidbody2D>();
-    }
-
-    private void Update()
-    {
-        if (!IsEnabled)
-            return;
-        
-        if (Input.GetKey(KeyCode.W))
-        {
-            TryApplyForce();
-        }
-    }
-
-    private void TryApplyForce()
-    {
-        if (!DrainFuel(consumption * Time.deltaTime))
-            return;
-        
-        ApplyForce();
-    }
-
-    private void ApplyForce()
-    {
-        body.AddForce(transform.up * force, ForceMode2D.Force);
-    }
+    public override List<Tuple<Vector2Int, Vector2>> FreeNeghbours => new List<Tuple<Vector2Int, Vector2>>();
 }
