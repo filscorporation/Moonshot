@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Thrusters : ControlledComponent
+public class Thrusters : ForceComponent
 {
     [SerializeField] protected float force = 10f;
     [SerializeField] protected float consumption = 1f;

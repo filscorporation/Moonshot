@@ -1,39 +1,37 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
 
 public abstract class ControlledComponent : ShipComponent
 {
-    private Rigidbody2D body;
+    private bool justPlaced = false;
     
-    protected abstract Vector2 Force { get; }
-    protected abstract float Consumption { get; }
-    protected override bool NeedFuel => true;
+    public KeyCode ControlKey { get; set; }
 
-    private void Start()
+    private void OnMouseOver()
     {
-        body = GetComponent<Rigidbody2D>();
-    }
-
-    private void Update()
-    {
-        if (!IsEnabled)
-            return;
-        
-        if (Input.GetKey(KeyCode.W))
+        if (IsPlaced && !justPlaced && Input.GetMouseButtonDown(0))
         {
-            TryApplyForce();
+            ControlKeysManager.Instance.SelectComponent(this);
         }
     }
 
-    private void TryApplyForce()
+    public override void OnPlaced()
     {
-        if (!DrainFuel(Consumption * Time.deltaTime))
-            return;
-        
-        ApplyForce();
+        base.OnPlaced();
+
+        ControlKey = GetDefaultControlKey();
+        Debug.Log("New control key " + ControlKey);
+
+        // Skip selecting when component was placed
+        justPlaced = true;
+        StartCoroutine(ResetJustPlaced());
     }
 
-    private void ApplyForce()
+    private IEnumerator ResetJustPlaced()
     {
-        body.AddForce(Force, ForceMode2D.Force);
+        yield return null;
+        justPlaced = false;
     }
+
+    protected abstract KeyCode GetDefaultControlKey();
 }

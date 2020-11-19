@@ -87,8 +87,8 @@ public abstract class ShipComponent : MonoBehaviour
     public Ship Ship { get; set; }
     public int Index { get; set; }
     protected bool IsEnabled { get; private set; }
+    protected bool IsPlaced { get; private set; }
     public Rigidbody2D Rigidbody { get; private set; }
-    public Collider2D Collider { get; private set; }
     
     public abstract int Toughness { get; }
     public virtual int MaxFuel => 0;
@@ -112,13 +112,17 @@ public abstract class ShipComponent : MonoBehaviour
 
     public virtual void Initialize()
     {
-        Collider = GetComponent<Collider2D>();
         Rigidbody = GetComponent<Rigidbody2D>();
 
         Fuel = MaxFuel;
     }
 
-    private void Attach(ShipComponent component)
+    public virtual void OnPlaced()
+    {
+        IsPlaced = true;
+    }
+
+    protected virtual void Attach(ShipComponent component)
     {
         FixedJoint2D joint = gameObject.AddComponent<FixedJoint2D>();
         joint.connectedBody = component.Rigidbody;
@@ -127,15 +131,13 @@ public abstract class ShipComponent : MonoBehaviour
     public void Disable()
     {
         IsEnabled = false;
-        Collider.enabled = false;
-        Rigidbody.simulated = false;
+        Rigidbody.bodyType = RigidbodyType2D.Static;
     }
     
     public void Enable()
     {
         IsEnabled = true;
-        Collider.enabled = true;
-        Rigidbody.simulated = true;
+        Rigidbody.bodyType = RigidbodyType2D.Dynamic;
 
         if (NeedFuel)
             ConnectFuelSystem();

@@ -49,6 +49,7 @@ public class ShipBuilder : MonoBehaviour
         GameObject go = new GameObject("Ship", typeof(Ship));
         ship = go.GetComponent<Ship>();
         ship.Initialize();
+        ControlKeysManager.Instance.ShowInfo();
 
         UpdateToughnessText();
     }
@@ -74,6 +75,7 @@ public class ShipBuilder : MonoBehaviour
                 Destroy(placingComponent.gameObject);
                 placingComponent = null;
             }
+            ControlKeysManager.Instance.Deselect();
         }
         
         for (int i = 0; i < numberKeys.Length; i++)
@@ -167,11 +169,13 @@ public class ShipBuilder : MonoBehaviour
 
     public void StartShip()
     {
+        // TODO: move to method and deselect
         if (placingComponent != null)
         {
             Destroy(placingComponent.gameObject);
             placingComponent = null;
         }
+        ControlKeysManager.Instance.HideInfo();
         
         buildingMode = false;
         ship.Simulate();

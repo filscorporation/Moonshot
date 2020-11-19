@@ -52,6 +52,7 @@ public class Ship : MonoBehaviour
 
         newComponent.Index = Components.Count;
         Components.Add(newComponent);
+        newComponent.OnPlaced();
     }
 
     public void RemoveComponent(ShipComponent removedComponent)

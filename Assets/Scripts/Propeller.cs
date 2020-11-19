@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Propeller : ControlledComponent
+public class Propeller : ForceComponent
 {
     [SerializeField] protected float force = 2.5f;
     [SerializeField] protected float consumption = 0.2f;
