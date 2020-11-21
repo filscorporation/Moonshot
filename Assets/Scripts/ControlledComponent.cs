@@ -20,7 +20,6 @@ public abstract class ControlledComponent : ShipComponent
         base.OnPlaced();
 
         ControlKey = GetDefaultControlKey();
-        Debug.Log("New control key " + ControlKey);
 
         // Skip selecting when component was placed
         justPlaced = true;

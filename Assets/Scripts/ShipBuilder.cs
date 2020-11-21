@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.UI;
 
 public class ShipBuilder : MonoBehaviour
 {
@@ -14,9 +12,6 @@ public class ShipBuilder : MonoBehaviour
 
     [SerializeField] private GameObject cabinPrefab;
     [SerializeField] private List<GameObject> componentsPrefabs;
-
-    [SerializeField] private Text toughnessText;
-    [SerializeField] private Text damageText;
 
     private bool buildingMode = true;
     private int selectedComponent = -1;
@@ -44,14 +39,14 @@ public class ShipBuilder : MonoBehaviour
         Instance = this;
     }
 
-    public void Initialize()
+    public Ship Initialize()
     {
         GameObject go = new GameObject("Ship", typeof(Ship));
         ship = go.GetComponent<Ship>();
         ship.Initialize();
         ControlKeysManager.Instance.ShowInfo();
 
-        UpdateToughnessText();
+        return ship;
     }
 
     private void Update()
@@ -62,8 +57,6 @@ public class ShipBuilder : MonoBehaviour
             SnapToMouse();
             ReadInputToPlaceComponent();
         }
-        
-        damageText.text = $"Damage: {ship.DamageTaken.ToString("F1", CultureInfo.InvariantCulture)}";
     }
 
     private void ReadInputToSelectComponent()
@@ -92,7 +85,6 @@ public class ShipBuilder : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !EventSystem.current.IsPointerOverGameObject() && placingComponent != null && placingSnapped)
         {
             ship.AddComponent(placingComponent);
-            UpdateToughnessText();
             placingSnapped = false;
             
             placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
@@ -158,13 +150,6 @@ public class ShipBuilder : MonoBehaviour
         placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
         placingComponent.Initialize();
         placingComponent.Disable();
-    }
-
-    private void UpdateToughnessText()
-    {
-        int t = ship.Toughness;
-        toughnessText.text = $"Toughness: {t}";
-        toughnessText.color = t >= 0 ? Color.green : Color.red;
     }
 
     public void StartShip()

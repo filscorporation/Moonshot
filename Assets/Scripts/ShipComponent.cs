@@ -110,6 +110,8 @@ public abstract class ShipComponent : MonoBehaviour
 
     #endregion
 
+    #region Public methods
+
     public virtual void Initialize()
     {
         Rigidbody = GetComponent<Rigidbody2D>();
@@ -120,12 +122,6 @@ public abstract class ShipComponent : MonoBehaviour
     public virtual void OnPlaced()
     {
         IsPlaced = true;
-    }
-
-    protected virtual void Attach(ShipComponent component)
-    {
-        FixedJoint2D joint = gameObject.AddComponent<FixedJoint2D>();
-        joint.connectedBody = component.Rigidbody;
     }
     
     public void Disable()
@@ -143,6 +139,26 @@ public abstract class ShipComponent : MonoBehaviour
             ConnectFuelSystem();
     }
 
+    public void Disconnect()
+    {
+        IsEnabled = false;
+
+        foreach (FixedJoint2D joint in GetComponents<FixedJoint2D>())
+        {
+            Destroy(joint);
+        }
+    }
+
+    #endregion
+
+    #region Private methods
+
+    protected virtual void Attach(ShipComponent component)
+    {
+        FixedJoint2D joint = gameObject.AddComponent<FixedJoint2D>();
+        joint.connectedBody = component.Rigidbody;
+    }
+
     private void ConnectFuelSystem()
     {
         for (int i = 0; i < Ship.Components.Count; i++)
@@ -154,7 +170,7 @@ public abstract class ShipComponent : MonoBehaviour
         fuelComponentCloseList[Index] = true;
     }
 
-    public bool DrainFuel(float fuel)
+    protected bool DrainFuel(float fuel)
     {
         while (fuelComponentOpenQueue.Any())
         {
@@ -188,6 +204,10 @@ public abstract class ShipComponent : MonoBehaviour
         return true;
     }
 
+    #endregion
+
+    #region Event methods
+
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.GetComponent<ShipComponent>() != null)
@@ -195,4 +215,6 @@ public abstract class ShipComponent : MonoBehaviour
         
         Ship.RegisterDamage(other.relativeVelocity.magnitude);
     }
+
+    #endregion
 }

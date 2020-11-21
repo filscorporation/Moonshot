@@ -2,29 +2,45 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class Ship : MonoBehaviour
 {
+    #region Constants
+
     private const float MIN_SAFE_MAGNITUDE = 4f;
     private const float MAGNITUDE_TO_DAMAGE = 0.1f;
-    
+
+    #endregion
+
+    #region Properties
+
+    public Player Player { get; set; }
     public List<ShipComponent> Components { get; set; }
-    public int Toughness => Components.Sum(c => c.Toughness);
+
+    public int Toughness => toughness ?? (toughness = Components.Sum(c => c.Toughness)).Value;
     public float DamageTaken { get; set; }
+    public bool IsActive { get; private set; }
+
+    #endregion
+
+    #region Attributes
+
+    private int? toughness;
+
+    #endregion
+
+    #region Public methods
 
     public void Initialize()
     {
         Components = new List<ShipComponent>();
         Cabin cabin = Instantiate(ShipBuilder.Instance.CabinPrefab).GetComponent<Cabin>();
-        cabin.transform.SetParent(transform);
-        cabin.Ship = this;
-        cabin.Index = 0;
+        cabin.OnPlaced();
         cabin.Initialize();
+        cabin.Disable();
         cabin.X = 0;
         cabin.Y = 0;
-        cabin.Disable();
-        Components.Add(cabin);
+        AddComponent(cabin);
     }
 
     public void AddComponent(ShipComponent newComponent)
@@ -53,6 +69,7 @@ public class Ship : MonoBehaviour
         newComponent.Index = Components.Count;
         Components.Add(newComponent);
         newComponent.OnPlaced();
+        toughness = null;
     }
 
     public void RemoveComponent(ShipComponent removedComponent)
@@ -60,10 +77,14 @@ public class Ship : MonoBehaviour
         // TODO: check if none of next components depends (attached) to this, recalulate all indexes
         
         throw new NotImplementedException();
+        
+        toughness = null;
     }
 
     public void Simulate()
     {
+        IsActive = true;
+        
         foreach (ShipComponent component in Components)
         {
             component.Enable();
@@ -77,7 +98,43 @@ public class Ship : MonoBehaviour
 
         if (damage > Toughness)
         {
-            Debug.Log("Ship destroyed");
+            Destroy();
         }
     }
+
+    public void PickUp(PickupObject picked)
+    {
+        if (!IsActive)
+            return;
+        
+        switch (picked)
+        {
+            case Scrap scrap:
+                Player.Scrap += scrap.ScrapAmount;
+                break;
+            case Blueprint blueprint:
+                Player.AddBlueprint(blueprint);
+                break;
+            default:
+                throw new IndexOutOfRangeException();
+        }
+        
+        picked.Destroy();
+    }
+
+    #endregion
+
+    #region Private methods
+
+    private void Destroy()
+    {
+        IsActive = false;
+        
+        foreach (ShipComponent component in Components)
+        {
+            component.Disconnect();
+        }
+    }
+
+    #endregion
 }
