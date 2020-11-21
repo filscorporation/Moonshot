@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ShipManagement.Components;
+using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
