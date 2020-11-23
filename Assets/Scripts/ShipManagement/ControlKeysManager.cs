@@ -86,6 +86,7 @@ namespace ShipManagement
             readKeyMode = false;
             selectedComponent = null;
             info.gameObject.SetActive(false);
+            selectedFrame.SetActive(false);
         }
 
         public void SelectComponent(ControlledComponent component)

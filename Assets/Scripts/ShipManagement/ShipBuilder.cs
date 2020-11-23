@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using JetBrains.Annotations;
+using UIManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -12,8 +15,8 @@ namespace ShipManagement
     
         private const float MIN_SNAP_DISTANCE = 0.5f;
 
-        [SerializeField] private GameObject cabinPrefab;
         [SerializeField] private List<GameObject> componentsPrefabs;
+        [SerializeField] private UISimulateButton simulateButton;
 
         private bool buildingMode = true;
         private int selectedComponent = -1;
@@ -33,8 +36,6 @@ namespace ShipManagement
             KeyCode.Alpha8,
             KeyCode.Alpha9,
         };
-
-        public GameObject CabinPrefab => cabinPrefab;
 
         private void Awake()
         {
@@ -88,10 +89,8 @@ namespace ShipManagement
             {
                 ship.AddComponent(placingComponent);
                 placingSnapped = false;
-            
-                placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
-                placingComponent.Initialize();
-                placingComponent.Disable();
+
+                placingComponent = InstantiateComponent(selectedComponent);
             }
         }
     
@@ -150,12 +149,15 @@ namespace ShipManagement
 
             selectedComponent = index;
             placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
-            placingComponent.Initialize();
+            placingComponent.Initialize(selectedComponent);
             placingComponent.Disable();
         }
 
+        [UsedImplicitly]
         public void StartShip()
         {
+            simulateButton.ShowBuildButton();
+            
             // TODO: move to method and deselect
             if (placingComponent != null)
             {
@@ -163,9 +165,43 @@ namespace ShipManagement
                 placingComponent = null;
             }
             ControlKeysManager.Instance.HideInfo();
-        
             buildingMode = false;
+            
+            ShipLoader.Instance.SaveShip(ship);
+            
             ship.Simulate();
+        }
+
+        [UsedImplicitly]
+        public void ToBuildMode()
+        {
+            StartCoroutine(ToBuildModeCoroutine());
+        }
+
+        private IEnumerator ToBuildModeCoroutine()
+        {
+            simulateButton.Hide();
+            
+            Destroy(ship.gameObject);
+            ship = ShipLoader.Instance.LoadShip();
+            ship.DamageTaken = 0;
+
+            GameManager.Instance.Player.Ship = ship;
+            ship.Player = GameManager.Instance.Player;
+
+            yield return new WaitUntil(() => ship.IsLoaded);
+            
+            simulateButton.ShowSimulateButton();
+            buildingMode = true;
+        }
+
+        public ShipComponent InstantiateComponent(int typeIndex)
+        {
+            ShipComponent component = Instantiate(componentsPrefabs[typeIndex]).GetComponent<ShipComponent>();
+            component.Initialize(typeIndex);
+            component.Disable();
+
+            return component;
         }
     }
 }

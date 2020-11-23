@@ -9,7 +9,7 @@ namespace WorldManagement
         private void OnTriggerEnter2D(Collider2D other)
         {
             ShipComponent component = other.gameObject.GetComponent<ShipComponent>();
-            if (component != null)
+            if (component != null && component.Ship != null)
             {
                 component.Ship.PickUp(this);
             }

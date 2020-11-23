@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using ShipManagement.Components;
@@ -24,6 +25,7 @@ namespace ShipManagement
         public int Toughness => toughness ?? (toughness = Components.Sum(c => c.Toughness)).Value;
         public float DamageTaken { get; set; }
         public bool IsActive { get; private set; }
+        public bool IsLoaded { get; private set; }
 
         #endregion
 
@@ -33,15 +35,64 @@ namespace ShipManagement
 
         #endregion
 
+        #region Data
+
+        [Serializable]
+        public class ShipData
+        {
+            public List<ShipComponent.ComponentData> Components;
+            public float DamageTaken;
+        }
+
+        public ShipData ToData()
+        {
+            return new ShipData
+            {
+                Components = Components.Select(c => c.ToData()).ToList(),
+                DamageTaken = DamageTaken,
+            };
+        }
+
+        public static Ship FromData(ShipData data)
+        {
+            Ship ship = ShipBuilder.Instance.Initialize();
+            List<ShipComponent> components = new List<ShipComponent>();
+            foreach (ShipComponent.ComponentData componentData in data.Components)
+            {
+                if (componentData.TypeIndex == 0) // Cabin created on ShipBuilder initialization
+                    continue;
+                components.Add(ShipComponent.FromData(componentData));
+            }
+
+            // waiting one frame of physiscs for colliderr and rigidbody of components to setup
+            // otherwise fixedjoint corrupts on rotated components
+            ship.StartCoroutine(FromDataCoroutine(ship, components));
+
+            ship.DamageTaken = data.DamageTaken;
+
+            return ship;
+        }
+
+        private static IEnumerator FromDataCoroutine(Ship ship, List<ShipComponent> components)
+        {
+            yield return new WaitForFixedUpdate();
+            foreach (ShipComponent shipComponent in components)
+            {
+                ship.AddComponent(shipComponent);
+            }
+
+            ship.IsLoaded = true;
+        }
+
+        #endregion
+
         #region Public methods
 
         public void Initialize()
         {
             Components = new List<ShipComponent>();
-            Cabin cabin = Instantiate(ShipBuilder.Instance.CabinPrefab).GetComponent<Cabin>();
+            Cabin cabin = (Cabin) ShipBuilder.Instance.InstantiateComponent(0);
             cabin.OnPlaced();
-            cabin.Initialize();
-            cabin.Disable();
             cabin.X = 0;
             cabin.Y = 0;
             AddComponent(cabin);
@@ -72,6 +123,7 @@ namespace ShipManagement
 
             newComponent.Index = Components.Count;
             Components.Add(newComponent);
+            newComponent.transform.position = transform.position + new Vector3(newComponent.X, newComponent.Y);
             newComponent.OnPlaced();
             toughness = null;
         }
@@ -100,7 +152,7 @@ namespace ShipManagement
             float damage = Mathf.Pow(Mathf.Max(0, magnitude - MIN_SAFE_MAGNITUDE), 2) * MAGNITUDE_TO_DAMAGE;
             DamageTaken += damage;
 
-            if (damage > Toughness)
+            if (DamageTaken > Toughness)
             {
                 Destroy();
             }

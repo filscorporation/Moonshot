@@ -10,7 +10,7 @@ public class Player
         ship.Player = this;
     }
     
-    public Ship Ship { get; private set; }
+    public Ship Ship { get; set; }
     public int Scrap { get; set; } = 0;
 
     public void AddBlueprint(Blueprint blueprint)

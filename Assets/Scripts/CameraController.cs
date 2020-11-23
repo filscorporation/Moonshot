@@ -8,7 +8,7 @@ public class CameraController : MonoBehaviour
     private void FixedUpdate()
     {
         if (target == null)
-            target = FindObjectOfType<Cabin>().transform;
+            target = FindObjectOfType<Cabin>()?.transform;
 
         if (target != null)
         {

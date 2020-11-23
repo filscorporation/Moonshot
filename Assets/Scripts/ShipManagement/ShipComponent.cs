@@ -82,6 +82,7 @@ namespace ShipManagement
             }
         }
     
+        public int TypeIndex { get; private set; }
         public int X { get; set; }
         public int Y { get; set; }
         public virtual bool CanRotate => false;
@@ -112,10 +113,46 @@ namespace ShipManagement
 
         #endregion
 
+        #region Data
+
+        [Serializable]
+        public class ComponentData
+        {
+            public int TypeIndex;
+            public int X;
+            public int Y;
+            public float Angle;
+        }
+
+        public ComponentData ToData()
+        {
+            return new ComponentData
+            {
+                TypeIndex = TypeIndex,
+                X = X,
+                Y = Y,
+                Angle = transform.eulerAngles.z,
+            };
+        }
+
+        public static ShipComponent FromData(ComponentData data)
+        {
+            ShipComponent component = ShipBuilder.Instance.InstantiateComponent(data.TypeIndex);
+            component.X = data.X;
+            component.Y = data.Y;
+            component.transform.eulerAngles = new Vector3(0, 0, data.Angle);
+            //ship.AddComponent(component);
+
+            return component;
+        }
+
+        #endregion
+
         #region Public methods
 
-        public virtual void Initialize()
+        public virtual void Initialize(int typeIndex)
         {
+            TypeIndex = typeIndex;
             Rigidbody = GetComponent<Rigidbody2D>();
 
             Fuel = MaxFuel;
