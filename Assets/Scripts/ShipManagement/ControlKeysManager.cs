@@ -100,6 +100,12 @@ namespace ShipManagement
             selectedFrame.SetActive(true);
         }
 
+        public void DeselectIsEquals(ShipComponent component)
+        {
+            if (component == selectedComponent)
+                Deselect();
+        }
+
         public void Deselect()
         {
             selectedComponent = null;

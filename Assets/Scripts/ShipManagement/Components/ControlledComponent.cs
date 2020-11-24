@@ -9,9 +9,11 @@ namespace ShipManagement.Components
     
         public KeyCode ControlKey { get; set; }
 
-        private void OnMouseOver()
+        protected override void LeftClicked()
         {
-            if (IsPlaced && !justPlaced && Input.GetMouseButtonDown(0))
+            base.LeftClicked();
+            
+            if (IsPlaced && !justPlaced)
             {
                 ControlKeysManager.Instance.SelectComponent(this);
             }

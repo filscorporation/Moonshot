@@ -203,5 +203,14 @@ namespace ShipManagement
 
             return component;
         }
+
+        public void TryRemoveComponent(ShipComponent component)
+        {
+            if (!buildingMode)
+                return;
+
+            if (ship.RemoveComponent(component))
+                ControlKeysManager.Instance.DeselectIsEquals(component);
+        }
     }
 }

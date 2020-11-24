@@ -243,9 +243,32 @@ namespace ShipManagement
             return true;
         }
 
+        protected virtual void LeftClicked() { }
+
+        protected virtual void RightClicked()
+        {
+            if (IsPlaced && !IsEnabled)
+            {
+                ShipBuilder.Instance.TryRemoveComponent(this);
+            }
+        }
+
         #endregion
 
         #region Event methods
+
+        private void OnMouseOver()
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                LeftClicked();
+            }
+            
+            if (Input.GetMouseButtonDown(1))
+            {
+                RightClicked();
+            }
+        }
 
         private void OnCollisionEnter2D(Collision2D other)
         {

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -10,6 +11,7 @@ namespace UIManagement
 
         [SerializeField] private Text toughnessText;
         [SerializeField] private Text damageText;
+        [SerializeField] private Text altitudeText;
         [SerializeField] private Text scrapText;
 
         private void Update()
@@ -23,6 +25,7 @@ namespace UIManagement
 
             UpdateToughnessText();
             damageText.text = $"Damage: {player.Ship.DamageTaken.ToString("F1", CultureInfo.InvariantCulture)}";
+            altitudeText.text = $"Altitude: {player.Ship.Components.First().transform.position.y.ToString("F1", CultureInfo.InvariantCulture)}";
             scrapText.text = $"Scrap: {player.Scrap}";
         }
 

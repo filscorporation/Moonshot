@@ -20,7 +20,7 @@ namespace ShipManagement
         #region Properties
 
         public Player Player { get; set; }
-        public List<ShipComponent> Components { get; set; }
+        public List<ShipComponent> Components { get; private set; }
 
         public int Toughness => toughness ?? (toughness = Components.Sum(c => c.Toughness)).Value;
         public float DamageTaken { get; set; }
@@ -64,8 +64,8 @@ namespace ShipManagement
                 components.Add(ShipComponent.FromData(componentData));
             }
 
-            // waiting one frame of physiscs for colliderr and rigidbody of components to setup
-            // otherwise fixedjoint corrupts on rotated components
+            // Waiting one frame of physiscs for components collider and rigidbody to setup
+            // Otherwise fixedjoint corrupts on rotated components
             ship.StartCoroutine(FromDataCoroutine(ship, components));
 
             ship.DamageTaken = data.DamageTaken;
@@ -128,12 +128,38 @@ namespace ShipManagement
             toughness = null;
         }
 
-        public void RemoveComponent(ShipComponent removedComponent)
+        public bool RemoveComponent(ShipComponent removedComponent)
         {
-            // TODO: check if none of next components depends (attached) to this, recalulate all indexes
+            if (GetDependantComponents(removedComponent).Any())
+                return false;
         
-            throw new NotImplementedException();
+            Components.RemoveAt(removedComponent.Index);
+            for (int i = removedComponent.Index; i < Components.Count; i++)
+            {
+                Components[i].Index = i;
+            }
+            Destroy(removedComponent.gameObject);
+            
+            toughness = null;
+
+            return true;
+        }
+
+        public void ForceRemoveComponent(ShipComponent removedComponent)
+        {
+            foreach (ShipComponent dependantComponent in GetDependantComponents(removedComponent).ToList())
+            {
+                Components.Remove(dependantComponent);
+                Destroy(dependantComponent);
+            }
         
+            Components.Remove(removedComponent);
+            for (int i = 0; i < Components.Count; i++)
+            {
+                Components[i].Index = i;
+            }
+            Destroy(removedComponent.gameObject);
+            
             toughness = null;
         }
 
@@ -189,6 +215,46 @@ namespace ShipManagement
             foreach (ShipComponent component in Components)
             {
                 component.Disconnect();
+            }
+        }
+
+        private IEnumerable<ShipComponent> GetDependantComponents(ShipComponent baseComponent)
+        {
+            if (baseComponent is Cabin)
+            {
+                foreach (ShipComponent component in Components)
+                {
+                    yield return component;
+                }
+            }
+
+            if (baseComponent.Neighbours.Count(n => n != null) <= 1)
+                yield break;
+
+            foreach (ShipComponent neighbour in baseComponent.Neighbours.Where(n => n != null))
+            {
+                bool[] passedComponents = new bool[Components.Count];
+                bool AttachedToCabin(ShipComponent component, ShipComponent toAvoid)
+                {
+                    if (passedComponents[component.Index] || component.Index == toAvoid.Index)
+                        return false;
+                    
+                    if (component is Cabin)
+                        return true;
+
+                    passedComponents[component.Index] = true;
+                    
+                    return component.Neighbours.Any(n => n != null && AttachedToCabin(n, baseComponent));
+                }
+
+                if (!AttachedToCabin(neighbour, baseComponent))
+                {
+                    for (int i = 0; i < passedComponents.Length; i++)
+                    {
+                        if (passedComponents[i])
+                            yield return Components[i];
+                    }
+                }
             }
         }
 
