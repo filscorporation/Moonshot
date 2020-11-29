@@ -2,6 +2,6 @@
 {
     public class Blueprint : PickupObject
     {
-        // TODO: blueprints
+        public int ComponentToDicover;
     }
 }

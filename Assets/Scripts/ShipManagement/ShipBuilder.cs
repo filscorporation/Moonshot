@@ -17,25 +17,13 @@ namespace ShipManagement
 
         [SerializeField] private List<GameObject> componentsPrefabs;
         [SerializeField] private UISimulateButton simulateButton;
+        [SerializeField] private UIShipBuilder shipBuilderUI;
 
         private bool buildingMode = true;
         private int selectedComponent = -1;
         private ShipComponent placingComponent;
         private bool placingSnapped = false;
         private Ship ship;
-
-        private readonly KeyCode[] numberKeys =
-        {
-            KeyCode.Alpha1,
-            KeyCode.Alpha2,
-            KeyCode.Alpha3,
-            KeyCode.Alpha4,
-            KeyCode.Alpha5,
-            KeyCode.Alpha6,
-            KeyCode.Alpha7,
-            KeyCode.Alpha8,
-            KeyCode.Alpha9,
-        };
 
         private void Awake()
         {
@@ -72,14 +60,6 @@ namespace ShipManagement
                     placingComponent = null;
                 }
                 ControlKeysManager.Instance.Deselect();
-            }
-        
-            for (int i = 0; i < numberKeys.Length; i++)
-            {
-                if (Input.GetKeyDown(numberKeys[i]))
-                {
-                    SetCurrentComponent(i);
-                }
             }
         }
 
@@ -133,9 +113,12 @@ namespace ShipManagement
             placingComponent.transform.position = position;
         }
 
-        private void SetCurrentComponent(int index)
+        public void SetCurrentComponent(int index)
         {
-            if (componentsPrefabs.Count <= index)
+            if (componentsPrefabs.Count <= index || index < 1)
+                return;
+
+            if (!ship.Player.DiscoveredComponents.Contains(index))
                 return;
         
             if (placingComponent != null && selectedComponent == index)
@@ -151,6 +134,20 @@ namespace ShipManagement
             placingComponent = Instantiate(componentsPrefabs[selectedComponent]).GetComponent<ShipComponent>();
             placingComponent.Initialize(selectedComponent);
             placingComponent.Disable();
+        }
+
+        public void Clear()
+        {
+            if (ship == null)
+                return;
+
+            ship.ClearComponents();
+            shipBuilderUI.Refesh(ship.Player);
+        }
+
+        public void RefreshComponentsUI()
+        {
+            shipBuilderUI.Refesh(ship.Player);
         }
 
         [UsedImplicitly]
@@ -169,6 +166,7 @@ namespace ShipManagement
             
             ShipLoader.Instance.SaveShip(ship);
             
+            shipBuilderUI.Hide();
             ship.Simulate();
         }
 
@@ -192,6 +190,7 @@ namespace ShipManagement
             yield return new WaitUntil(() => ship.IsLoaded);
             
             simulateButton.ShowSimulateButton();
+            shipBuilderUI.Show();
             buildingMode = true;
         }
 

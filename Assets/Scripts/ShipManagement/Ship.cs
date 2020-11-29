@@ -102,7 +102,7 @@ namespace ShipManagement
         {
             newComponent.transform.SetParent(transform);
             newComponent.Ship = this;
-        
+            
             foreach (ShipComponent component in Components)
             {
                 if (component.X == newComponent.X && component.Y == newComponent.Y)
@@ -163,6 +163,20 @@ namespace ShipManagement
             toughness = null;
         }
 
+        public void ClearComponents()
+        {
+            foreach (ShipComponent component in Components)
+            {
+                if (component is Cabin)
+                    continue;
+                Destroy(component.gameObject);
+            }
+
+            Components.RemoveAll(c => !(c is Cabin));
+
+            toughness = null;
+        }
+
         public void Simulate()
         {
             IsActive = true;
@@ -175,6 +189,9 @@ namespace ShipManagement
 
         public void RegisterDamage(float magnitude)
         {
+            if (!IsActive)
+                return;
+            
             float damage = Mathf.Pow(Mathf.Max(0, magnitude - MIN_SAFE_MAGNITUDE), 2) * MAGNITUDE_TO_DAMAGE;
             DamageTaken += damage;
 

@@ -1,4 +1,4 @@
-﻿using System;
+﻿using System.Collections.Generic;
 using ShipManagement;
 using WorldManagement;
 
@@ -8,13 +8,20 @@ public class Player
     {
         Ship = ship;
         ship.Player = this;
+        DiscoveredComponents = new List<int> { 0, 1, 2 };
+        
+        ShipBuilder.Instance.RefreshComponentsUI();
     }
     
     public Ship Ship { get; set; }
     public int Scrap { get; set; } = 0;
+    public List<int> DiscoveredComponents { get; }
 
     public void AddBlueprint(Blueprint blueprint)
     {
-        throw new NotImplementedException();
+        if (DiscoveredComponents.Contains(blueprint.ComponentToDicover))
+            return;
+        DiscoveredComponents.Add(blueprint.ComponentToDicover);
+        ShipBuilder.Instance.RefreshComponentsUI();
     }
 }

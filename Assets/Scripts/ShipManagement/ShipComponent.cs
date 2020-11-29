@@ -63,7 +63,7 @@ namespace ShipManagement
             }
         }
     
-        public List<ShipComponent> Neighbours => new List<ShipComponent> { up, down, right, left };
+        public  List<ShipComponent> Neighbours => new List<ShipComponent> { up, down, right, left };
 
         /// <summary>
         /// Returns pair of free neighbour slot index and its own position, for angle calculation

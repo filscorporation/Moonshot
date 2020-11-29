@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 3603155105933161044}
   - component: {fileID: 3603155105933161049}
   - component: {fileID: 3603155105933161048}
+  - component: {fileID: -4253852654623992422}
   m_Layer: 0
   m_Name: Gear
   m_TagString: Untagged
@@ -95,7 +96,7 @@ CircleCollider2D:
   m_Enabled: 1
   m_Density: 1
   m_Material: {fileID: 0}
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
@@ -135,3 +136,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ScrapAmount: 5
+--- !u!114 &-4253852654623992422
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3603155105933161045}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fe3b32de55e946a197a5e3fd5e54bf44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  amplitude: 0.1
+  speed: 1.71

@@ -77,7 +77,6 @@ namespace ShipManagement
         public void ShowInfo()
         {
             readKeyMode = false;
-            info.gameObject.SetActive(true);
             info.NoTarget();
         }
 
@@ -85,7 +84,6 @@ namespace ShipManagement
         {
             readKeyMode = false;
             selectedComponent = null;
-            info.gameObject.SetActive(false);
             selectedFrame.SetActive(false);
         }
 
