@@ -153,6 +153,10 @@ namespace ShipManagement
         [UsedImplicitly]
         public void StartShip()
         {
+            if (ship.Cost > ship.Player.Scrap)
+                // TODO: animate not enough scrap and maybe change start button
+                return;
+            
             simulateButton.ShowBuildButton();
             
             // TODO: move to method and deselect

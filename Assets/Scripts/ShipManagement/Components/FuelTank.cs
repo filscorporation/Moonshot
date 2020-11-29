@@ -9,6 +9,7 @@ namespace ShipManagement.Components
 
         [SerializeField] private SpriteRenderer fuelSprite;
 
+        public override int Cost => 8;
         public override int Toughness => -1;
         public override int MaxFuel => 10;
         protected override bool CanTransferFuel => true;

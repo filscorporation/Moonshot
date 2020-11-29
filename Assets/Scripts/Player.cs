@@ -8,6 +8,7 @@ public class Player
     {
         Ship = ship;
         ship.Player = this;
+        Scrap = 5;
         DiscoveredComponents = new List<int> { 0, 1, 2 };
         
         ShipBuilder.Instance.RefreshComponentsUI();

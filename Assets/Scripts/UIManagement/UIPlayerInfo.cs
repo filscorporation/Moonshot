@@ -10,6 +10,7 @@ namespace UIManagement
         private Player player;
 
         [SerializeField] private Text toughnessText;
+        [SerializeField] private Text shipCostText;
         [SerializeField] private Text damageText;
         [SerializeField] private Text altitudeText;
         [SerializeField] private Text scrapText;
@@ -24,6 +25,7 @@ namespace UIManagement
             }
 
             UpdateToughnessText();
+            UpdateShipCostText();
             damageText.text = $"Damage: {player.Ship.DamageTaken.ToString("F1", CultureInfo.InvariantCulture)}";
             altitudeText.text = $"Altitude: {player.Ship.Components.First().transform.position.y.ToString("F1", CultureInfo.InvariantCulture)}";
             scrapText.text = $"Scrap: {player.Scrap}";
@@ -34,6 +36,13 @@ namespace UIManagement
             int t = player.Ship.Toughness;
             toughnessText.text = $"Toughness: {t}";
             toughnessText.color = t >= 0 ? Color.green : Color.red;
+        }
+
+        private void UpdateShipCostText()
+        {
+            int c = player.Ship.Cost;
+            shipCostText.text = $"Ship cost: {c}";
+            shipCostText.color = c <= player.Scrap ? Color.green : Color.red;
         }
     }
 }

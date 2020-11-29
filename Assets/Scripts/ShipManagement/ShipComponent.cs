@@ -93,6 +93,7 @@ namespace ShipManagement
         protected bool IsPlaced { get; private set; }
         public Rigidbody2D Rigidbody { get; private set; }
     
+        public abstract int Cost { get; }
         public abstract int Toughness { get; }
         public virtual int MaxFuel => 0;
         public float Fuel { get; set; }

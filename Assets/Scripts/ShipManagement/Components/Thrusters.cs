@@ -11,6 +11,7 @@ namespace ShipManagement.Components
 
         public override bool CanRotate => true;
     
+        public override int Cost => 6;
         protected override Vector2 Force => -transform.up * force;
         protected override float Consumption => consumption;
         public override int Toughness => -1;

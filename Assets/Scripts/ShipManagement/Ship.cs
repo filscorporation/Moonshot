@@ -23,6 +23,7 @@ namespace ShipManagement
         public List<ShipComponent> Components { get; private set; }
 
         public int Toughness => toughness ?? (toughness = Components.Sum(c => c.Toughness)).Value;
+        public int Cost => cost ?? (cost = Components.Sum(c => c.Cost)).Value;
         public float DamageTaken { get; set; }
         public bool IsActive { get; private set; }
         public bool IsLoaded { get; private set; }
@@ -32,6 +33,7 @@ namespace ShipManagement
         #region Attributes
 
         private int? toughness;
+        private int? cost;
 
         #endregion
 
@@ -126,6 +128,7 @@ namespace ShipManagement
             newComponent.transform.position = transform.position + new Vector3(newComponent.X, newComponent.Y);
             newComponent.OnPlaced();
             toughness = null;
+            cost = null;
         }
 
         public bool RemoveComponent(ShipComponent removedComponent)
@@ -141,6 +144,7 @@ namespace ShipManagement
             Destroy(removedComponent.gameObject);
             
             toughness = null;
+            cost = null;
 
             return true;
         }
@@ -161,6 +165,7 @@ namespace ShipManagement
             Destroy(removedComponent.gameObject);
             
             toughness = null;
+            cost = null;
         }
 
         public void ClearComponents()
@@ -175,6 +180,7 @@ namespace ShipManagement
             Components.RemoveAll(c => !(c is Cabin));
 
             toughness = null;
+            cost = null;
         }
 
         public void Simulate()

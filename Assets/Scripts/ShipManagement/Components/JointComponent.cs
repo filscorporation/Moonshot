@@ -8,6 +8,7 @@ namespace ShipManagement.Components
     {
         public override bool CanRotate => true;
         
+        public override int Cost => 2;
         public override int Toughness => -3;
         protected override KeyCode GetDefaultControlKey() => KeyCode.Space;
 
