@@ -86,6 +86,9 @@ namespace ShipManagement
         public int X { get; set; }
         public int Y { get; set; }
         public virtual bool CanRotate => false;
+        
+        public abstract string Name { get; }
+        public abstract string Description { get; }
     
         public Ship Ship { get; set; }
         public int Index { get; set; }
@@ -95,6 +98,7 @@ namespace ShipManagement
     
         public abstract int Cost { get; }
         public abstract int Toughness { get; }
+        public abstract int Weight { get; }
         public virtual int MaxFuel => 0;
         public float Fuel { get; set; }
         protected virtual bool NeedFuel => false;

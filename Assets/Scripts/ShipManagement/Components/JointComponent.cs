@@ -6,10 +6,14 @@ namespace ShipManagement.Components
 {
     public class JointComponent : ControlledComponent
     {
+        public override string Name => "Joint";
+        public override string Description => $"Can detatch on key pressed (for multistage rockets). Cost {Cost}. Weights almost 0. Gives {Toughness} toughness";
+        
         public override bool CanRotate => true;
         
         public override int Cost => 2;
         public override int Toughness => -3;
+        public override int Weight => 0;
         protected override KeyCode GetDefaultControlKey() => KeyCode.Space;
 
         public override List<Tuple<Vector2Int, Vector2>> FreeNeghbours

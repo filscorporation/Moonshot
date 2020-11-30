@@ -150,6 +150,11 @@ namespace ShipManagement
             shipBuilderUI.Refesh(ship.Player);
         }
 
+        public ShipComponent GetComponentByTypeID(int typeID)
+        {
+            return componentsPrefabs[typeID].GetComponent<ShipComponent>();
+        }
+
         [UsedImplicitly]
         public void StartShip()
         {
