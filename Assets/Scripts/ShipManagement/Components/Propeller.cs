@@ -24,5 +24,30 @@ namespace ShipManagement.Components
         public override int MaxFuel => 1;
 
         public override List<Tuple<Vector2Int, Vector2>> FreeNeghbours => new List<Tuple<Vector2Int, Vector2>>();
+        
+        public override List<Vector2Int> PossibleNeghbours
+        {
+            get
+            {
+                List<Vector2Int> result = new List<Vector2Int>();
+                switch (Mathf.RoundToInt(transform.eulerAngles.z / 90))
+                {
+                    case 0:
+                        result.Add(new Vector2Int(X, Y - 1));
+                        break;
+                    case 1:
+                        result.Add(new Vector2Int(X - 1, Y));
+                        break;
+                    case 2:
+                        result.Add(new Vector2Int(X, Y + 1));
+                        break;
+                    case 3:
+                        result.Add(new Vector2Int(X + 1, Y));
+                        break;
+                }
+
+                return result;
+            }
+        }
     }
 }

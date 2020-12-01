@@ -46,6 +46,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: eb08c82b894d4bc0ad11a8cf79bc3abd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  normalSprite: {fileID: 21300000, guid: 14fd32badb5a86843a8e06cd0139cba0, type: 3}
+  coldSprite: {fileID: 21300000, guid: cdc66cf9273b6b64e94d763c5cceb42d, type: 3}
 --- !u!212 &5727112100682515703
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -61,6 +63,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:

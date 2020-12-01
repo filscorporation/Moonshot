@@ -8,26 +8,56 @@ namespace ShipManagement.Components
         protected abstract float Consumption { get; }
         protected override bool NeedFuel => true;
 
+        private bool isApplyingForce = false;
+        protected bool IsApplyingForce
+        {
+            get => isApplyingForce;
+            set
+            {
+                if (isApplyingForce == value)
+                    return;
+
+                isApplyingForce = value;
+                ApplyingForceChanged();
+            }
+        }
+
+        protected virtual void ApplyingForceChanged()
+        {
+            
+        }
+
         private void Update()
         {
             if (!IsEnabled)
+            {
+                IsApplyingForce = false;
                 return;
+            }
         
             if (Input.GetKey(ControlKey))
             {
                 TryApplyForce();
+            }
+            else
+            {
+                IsApplyingForce = false;
             }
         }
 
         private void TryApplyForce()
         {
             if (!DrainFuel(Consumption * Time.deltaTime))
+            {
+                IsApplyingForce = false;
                 return;
+            }
         
             ApplyForce();
+            IsApplyingForce = true;
         }
 
-        private void ApplyForce()
+        protected virtual void ApplyForce()
         {
             Rigidbody.AddForce(Force, ForceMode2D.Force);
         }

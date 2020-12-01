@@ -112,6 +112,9 @@ namespace ShipManagement
                 if (component.X == newComponent.X && component.Y == newComponent.Y)
                     throw new InvalidOperationException();
 
+                if (!component.PossibleNeghbours.Contains(new Vector2Int(newComponent.X, newComponent.Y)))
+                    continue; // TODO: possible optimization
+
                 if (component.X == newComponent.X + 1 && component.Y == newComponent.Y)
                     newComponent.Right = component;
 
@@ -165,6 +168,10 @@ namespace ShipManagement
                 Components[i].Index = i;
             }
             Destroy(removedComponent.gameObject);
+            foreach (ShipComponent component in Components)
+            {
+                component.RefreshFuelSystem();
+            }
             
             toughness = null;
             cost = null;

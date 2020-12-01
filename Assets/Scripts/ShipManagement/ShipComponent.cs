@@ -63,7 +63,7 @@ namespace ShipManagement
             }
         }
     
-        public  List<ShipComponent> Neighbours => new List<ShipComponent> { up, down, right, left };
+        public List<ShipComponent> Neighbours => new List<ShipComponent> { up, down, right, left };
 
         /// <summary>
         /// Returns pair of free neighbour slot index and its own position, for angle calculation
@@ -81,7 +81,16 @@ namespace ShipManagement
                 return result;
             }
         }
-    
+        
+        public virtual List<Vector2Int> PossibleNeghbours =>
+            new List<Vector2Int>
+            {
+                new Vector2Int(X, Y + 1),
+                new Vector2Int(X, Y - 1),
+                new Vector2Int(X + 1, Y),
+                new Vector2Int(X - 1, Y),
+            };
+
         public int TypeIndex { get; private set; }
         public int X { get; set; }
         public int Y { get; set; }
@@ -146,7 +155,6 @@ namespace ShipManagement
             component.X = data.X;
             component.Y = data.Y;
             component.transform.eulerAngles = new Vector3(0, 0, data.Angle);
-            //ship.AddComponent(component);
 
             return component;
         }
@@ -210,6 +218,18 @@ namespace ShipManagement
                 fuelComponentCloseList.Add(false);
             }
 
+            fuelComponentOpenQueue.Enqueue(Index);
+            fuelComponentCloseList[Index] = true;
+        }
+
+        public void RefreshFuelSystem()
+        {
+            for (int i = 0; i < Ship.Components.Count; i++)
+            {
+                fuelComponentCloseList.Add(false);
+            }
+
+            fuelComponentOpenQueue.Clear();
             fuelComponentOpenQueue.Enqueue(Index);
             fuelComponentCloseList[Index] = true;
         }
