@@ -12,7 +12,7 @@ namespace ShipManagement.Components
         [SerializeField] private Sprite normalSprite;
         [SerializeField] private Sprite coldSprite;
 
-        private SpriteRenderer renderer;
+        private SpriteRenderer spriteRenderer;
         
         public override string Name => nameof(Baloon);
         public override string Description => $"Has negative weight {Weight}. Loses its effectiveness at altitude " +
@@ -24,7 +24,7 @@ namespace ShipManagement.Components
 
         private void Start()
         {
-            renderer = GetComponent<SpriteRenderer>();
+            spriteRenderer = GetComponent<SpriteRenderer>();
             
             StartCoroutine(CheckEffectivenessCoroutine());
         }
@@ -32,9 +32,9 @@ namespace ShipManagement.Components
         private void Update()
         {
             if (transform.position.y > EFFECTIVE_HEIGHT_MIN)
-                renderer.sprite = coldSprite;
+                spriteRenderer.sprite = coldSprite;
             else
-                renderer.sprite = normalSprite;
+                spriteRenderer.sprite = normalSprite;
         }
 
         private IEnumerator CheckEffectivenessCoroutine()

@@ -6,7 +6,7 @@ namespace UIManagement
     public class UITooltipHandler : MonoBehaviour, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private string title;
-        [SerializeField] private string description;
+        [SerializeField] [TextArea(3,10)] private string description;
 
         private RectTransform rectTransform;
         
