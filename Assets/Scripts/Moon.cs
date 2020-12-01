@@ -2,7 +2,7 @@
 
 public class Moon : MonoBehaviour
 {
-    public const float MOON_HEIGHT = 150f;
+    public const int MOON_HEIGHT = 150;
     
     private void Update()
     {
