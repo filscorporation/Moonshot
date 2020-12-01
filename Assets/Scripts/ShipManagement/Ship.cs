@@ -21,6 +21,8 @@ namespace ShipManagement
 
         public Player Player { get; set; }
         public List<ShipComponent> Components { get; private set; }
+        public float Altitude => Components.First().transform.position.y;
+        public float PositionX => Components.First().transform.position.x;
 
         public int Toughness => toughness ?? (toughness = Components.Sum(c => c.Toughness)).Value;
         public int Cost => cost ?? (cost = Components.Sum(c => c.Cost)).Value;

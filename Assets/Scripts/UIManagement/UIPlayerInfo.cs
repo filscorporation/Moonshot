@@ -27,7 +27,7 @@ namespace UIManagement
             UpdateToughnessText();
             UpdateShipCostText();
             damageText.text = $"Damage: {player.Ship.DamageTaken.ToString("F1", CultureInfo.InvariantCulture)}";
-            altitudeText.text = $"Altitude: {player.Ship.Components.First().transform.position.y.ToString("F1", CultureInfo.InvariantCulture)}";
+            altitudeText.text = $"Altitude: {player.Ship.Altitude.ToString("F1", CultureInfo.InvariantCulture)}";
             scrapText.text = $"Scrap: {player.Scrap}";
         }
 
